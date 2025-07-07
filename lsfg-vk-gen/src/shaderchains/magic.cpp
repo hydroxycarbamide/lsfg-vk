@@ -1,5 +1,5 @@
 #include "shaderchains/magic.hpp"
-#include "utils.hpp"
+#include "utils/utils.hpp"
 
 using namespace LSFG::Shaderchains;
 
@@ -18,11 +18,11 @@ Magic::Magic(const Core::Device& device, Pool::ShaderPool& shaderpool,
           inImg2(std::move(inImg2)), inImg3(std::move(inImg3)),
           optImg(std::move(optImg)) {
     this->shaderModule = shaderpool.getShader(device, "magic.spv",
-        { { 2,       VK_DESCRIPTOR_TYPE_SAMPLER },
+        { { 1,       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER },
+          { 2,       VK_DESCRIPTOR_TYPE_SAMPLER },
           { 4+4+2+1, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE },
-          { 3+3+2,   VK_DESCRIPTOR_TYPE_STORAGE_IMAGE },
-          { 1,       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER } });
-    this->pipeline = Core::Pipeline(device, this->shaderModule);
+          { 3+3+2,   VK_DESCRIPTOR_TYPE_STORAGE_IMAGE } });
+    this->pipeline = shaderpool.getPipeline(device, "magic.spv");
     for (size_t i = 0; i < genc; i++) {
         this->nDescriptorSets.emplace_back();
         for (size_t j = 0; j < 3; j++)
@@ -68,6 +68,7 @@ Magic::Magic(const Core::Device& device, Pool::ShaderPool& shaderpool,
         }
         for (size_t i = 0; i < genc; i++) {
             this->nDescriptorSets.at(i).at(fc).update(device)
+                .add(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, this->buffers.at(i))
                 .add(VK_DESCRIPTOR_TYPE_SAMPLER, Globals::samplerClampBorder)
                 .add(VK_DESCRIPTOR_TYPE_SAMPLER, Globals::samplerClampEdge)
                 .add(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, *prevImgs1)
@@ -78,7 +79,6 @@ Magic::Magic(const Core::Device& device, Pool::ShaderPool& shaderpool,
                 .add(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, this->outImgs3)
                 .add(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, this->outImgs2)
                 .add(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, this->outImgs1)
-                .add(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, this->buffers.at(i))
                 .build();
         }
     }

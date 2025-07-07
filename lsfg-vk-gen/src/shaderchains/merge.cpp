@@ -1,5 +1,5 @@
 #include "shaderchains/merge.hpp"
-#include "utils.hpp"
+#include "utils/utils.hpp"
 
 using namespace LSFG::Shaderchains;
 
@@ -18,11 +18,11 @@ Merge::Merge(const Core::Device& device, Pool::ShaderPool& shaderpool,
           inImg4(std::move(inImg4)),
           inImg5(std::move(inImg5)) {
     this->shaderModule = shaderpool.getShader(device, "merge.spv",
-        { { 2, VK_DESCRIPTOR_TYPE_SAMPLER },
+        { { 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER },
+          { 2, VK_DESCRIPTOR_TYPE_SAMPLER },
           { 5, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE },
-          { 1, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE },
-          { 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER } });
-    this->pipeline = Core::Pipeline(device, this->shaderModule);
+          { 1, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE } });
+    this->pipeline = shaderpool.getPipeline(device, "merge.spv");
     for (size_t i = 0; i < genc; i++) {
         this->nDescriptorSets.emplace_back();
         for (size_t j = 0; j < 2; j++)
@@ -36,10 +36,12 @@ Merge::Merge(const Core::Device& device, Pool::ShaderPool& shaderpool,
 
     auto extent = this->inImg1.getExtent();
 
+    const VkFormat format = getenv("LSFG_HDR") == nullptr
+        ? VK_FORMAT_R8G8B8A8_UNORM
+        : VK_FORMAT_R16G16B16A16_SFLOAT;
     for (size_t i = 0; i < genc; i++)
         this->outImgs.emplace_back(device,
-            extent,
-            VK_FORMAT_R8G8B8A8_UNORM,
+            extent, format,
             VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VK_IMAGE_ASPECT_COLOR_BIT,
             outFds.at(i));
@@ -47,6 +49,7 @@ Merge::Merge(const Core::Device& device, Pool::ShaderPool& shaderpool,
     for (size_t fc = 0; fc < 2; fc++) {
         for (size_t i = 0; i < genc; i++) {
             this->nDescriptorSets.at(i).at(fc).update(device)
+                .add(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, this->buffers.at(i))
                 .add(VK_DESCRIPTOR_TYPE_SAMPLER, Globals::samplerClampBorder)
                 .add(VK_DESCRIPTOR_TYPE_SAMPLER, Globals::samplerClampEdge)
                 .add(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, (fc % 2 == 0) ? this->inImg1 : this->inImg2)
@@ -55,7 +58,6 @@ Merge::Merge(const Core::Device& device, Pool::ShaderPool& shaderpool,
                 .add(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, this->inImg4)
                 .add(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, this->inImg5)
                 .add(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, this->outImgs.at(i))
-                .add(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, this->buffers.at(i))
                 .build();
         }
     }

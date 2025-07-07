@@ -1,28 +1,33 @@
 cmake_minimum_required(VERSION 3.29)
 
 # cmake options
-
 set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_SKIP_BUILD_RPATH FALSE)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-set(CMAKE_INSTALL_RPATH "$\{ORIGIN\}")
-
+set(CMAKE_SKIP_RPATH ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# main project
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_definitions("-DLSFG_NO_DEBUG")
+endif()
 
+# subprojects
+include(cmake/FetchDXVK.cmake)
+include(cmake/FetchPeParse.cmake)
+
+add_subdirectory(lsfg-vk-gen)
+
+# main project
 project(lsfg-vk
     VERSION 0.0.1
     DESCRIPTION "lsfg-vk: LSFG on Linux through Vulkan"
     LANGUAGES CXX)
 
-add_subdirectory(lsfg-vk-gen)
-
 file(GLOB SOURCES
-    "src/loader/*.cpp"
+    "src/utils/*.cpp"
     "src/mini/*.cpp"
     "src/*.cpp"
 )
@@ -33,8 +38,6 @@ target_include_directories(lsfg-vk
     PRIVATE include)
 target_link_libraries(lsfg-vk
     PRIVATE lsfg-vk-gen vulkan)
-set_target_properties(lsfg-vk
-    PROPERTIES CXX_CLANG_TIDY clang-tidy)
 target_compile_options(lsfg-vk PRIVATE
     -Weverything
     # disable compat c++ flags
@@ -52,13 +55,9 @@ target_compile_options(lsfg-vk PRIVATE
     -Wno-global-constructors   # allow globals
     # required for vulkan
     -Wno-cast-function-type-strict
-    # required for dxvk (yeah don't worry about it)
-    -Qunused-arguments -Wl,--unresolved-symbols=ignore-all
 )
 
-install(FILES "${CMAKE_BINARY_DIR}/peparse/src/peparse_git/pe-parser-library/build/libpe-parse.so" DESTINATION lib)
-install(FILES "${CMAKE_BINARY_DIR}/dxvk/native/usr/lib/libdxvk_d3d11.so.0.20602" DESTINATION lib RENAME libdxvk_d3d11.so.0)
-install(FILES "${CMAKE_BINARY_DIR}/dxvk/native/usr/lib/libdxvk_dxgi.so.0.20602" DESTINATION lib RENAME libdxvk_dxgi.so.0)
-install(FILES "${CMAKE_BINARY_DIR}/dxvk/libdxvkinternals.so" DESTINATION lib)
-install(FILES "${CMAKE_BINARY_DIR}/liblsfg-vk.so" DESTINATION lib)
-install(FILES "${CMAKE_BINARY_DIR}/lsfg-vk-gen/liblsfg-vk-gen.so" DESTINATION lib)
+install(FILES "${CMAKE_BINARY_DIR}/liblsfg-vk.so"
+    DESTINATION lib)
+install(FILES "${CMAKE_SOURCE_DIR}/VkLayer_LS_frame_generation.json"
+    DESTINATION share/vulkan/implicit_layer.d)

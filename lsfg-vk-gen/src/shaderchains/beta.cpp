@@ -1,5 +1,5 @@
 #include "shaderchains/beta.hpp"
-#include "utils.hpp"
+#include "utils/utils.hpp"
 
 using namespace LSFG::Shaderchains;
 
@@ -30,18 +30,21 @@ Beta::Beta(const Core::Device& device, Pool::ShaderPool& shaderpool,
               { 2, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE },
               { 2, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE } }),
         shaderpool.getShader(device, "beta/4.spv",
-            { { 1, VK_DESCRIPTOR_TYPE_SAMPLER },
+            { { 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER },
+              { 1, VK_DESCRIPTOR_TYPE_SAMPLER },
               { 2, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE },
-              { 6, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE },
-              { 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER } })
+              { 6, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE } })
     }};
-    for (size_t i = 0; i < 5; i++) {
-        this->pipelines.at(i) = Core::Pipeline(device,
-            this->shaderModules.at(i));
-        if (i == 0 || i == 4) continue; // first shader has special logic
+    this->pipelines = {{
+        shaderpool.getPipeline(device, "beta/0.spv"),
+        shaderpool.getPipeline(device, "beta/1.spv"),
+        shaderpool.getPipeline(device, "beta/2.spv"),
+        shaderpool.getPipeline(device, "beta/3.spv"),
+        shaderpool.getPipeline(device, "beta/4.spv")
+    }};
+    for (size_t i = 1; i < 4; i++)
         this->descriptorSets.at(i - 1) = Core::DescriptorSet(device, pool,
             this->shaderModules.at(i));
-    }
     for (size_t i = 0; i < 3; i++)
         this->specialDescriptorSets.at(i) = Core::DescriptorSet(device, pool,
             this->shaderModules.at(0));
@@ -115,10 +118,10 @@ Beta::Beta(const Core::Device& device, Pool::ShaderPool& shaderpool,
         .build();
     for (size_t i = 0; i < genc; i++) {
         this->nDescriptorSets.at(i).update(device)
+            .add(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, this->buffers.at(i))
             .add(VK_DESCRIPTOR_TYPE_SAMPLER, Globals::samplerClampBorder)
             .add(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, this->tempImgs2)
             .add(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, this->outImgs)
-            .add(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, this->buffers.at(i))
             .build();
     }
 }

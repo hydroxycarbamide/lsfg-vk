@@ -1,9 +1,9 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include <vector>
 #include <vulkan/vulkan_core.h>
 
+#include <vector>
 #include <utility>
 
 namespace Utils {
@@ -21,6 +21,14 @@ namespace Utils {
     ///
     std::pair<uint32_t, VkQueue> findQueue(VkDevice device, VkPhysicalDevice physicalDevice,
         VkDeviceCreateInfo* desc, VkQueueFlags flags);
+
+    ///
+    /// Get the UUID of the physical device.
+    ///
+    /// @param physicalDevice The physical device to get the UUID from.
+    /// @return The UUID of the physical device.
+    ///
+    uint64_t getDeviceUUID(VkPhysicalDevice physicalDevice);
 
     ///
     /// Ensure a list of extensions is present in the given array.

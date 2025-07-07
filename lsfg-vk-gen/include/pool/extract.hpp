@@ -35,7 +35,7 @@ namespace LSFG::Pool {
         ///
         /// @throws std::runtime_error if the resource is not found.
         ///
-        [[nodiscard]] std::vector<uint8_t> getResource(const std::string& hash) const;
+        [[nodiscard]] std::vector<uint8_t> getResource(uint32_t hash) const;
 
         // Trivially copyable, moveable and destructible
         Extractor(const Extractor&) = delete;
@@ -44,41 +44,18 @@ namespace LSFG::Pool {
         Extractor& operator=(Extractor&&) = default;
         ~Extractor() = default;
     private:
-        std::unordered_map<std::string, std::vector<uint8_t>> resources;
+        std::unordered_map<uint32_t, std::vector<uint8_t>> resources;
     };
 
     ///
-    /// DirectX bytecode translator class.
+    /// Translate DXBC into SPIR-V.
     ///
-    class Translator {
-    public:
-        ///
-        /// Create a new translator.
-        ///
-        /// @throws std::runtime_error if the initialization fails.
-        ///
-        Translator();
-
-        ///
-        /// Translate DXBC into SPIR-V.
-        ///
-        /// @param dxbc Bytecode to translate.
-        /// @return Translated SPIR-V bytecode.
-        ///
-        /// @throws std::runtime_error if the translation fails.
-        ///
-        [[nodiscard]] std::vector<uint8_t> translate(const std::vector<uint8_t>& dxbc) const;
-
-        // Trivially copyable, moveable and destructible
-        Translator(const Translator&) = delete;
-        Translator& operator=(const Translator&) = delete;
-        Translator(Translator&&) = default;
-        Translator& operator=(Translator&&) = default;
-        ~Translator() = default;
-    private:
-        std::shared_ptr<ID3D11Device*> device;
-        std::shared_ptr<ID3D11DeviceContext*> context;
-    };
+    /// @param dxbc Bytecode to translate.
+    /// @return Translated SPIR-V bytecode.
+    ///
+    /// @throws std::runtime_error if the translation fails.
+    ///
+    [[nodiscard]] std::vector<uint8_t> dxbcToSpirv(const std::vector<uint8_t>& dxbc);
 
 }
 
