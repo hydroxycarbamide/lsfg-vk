@@ -30,7 +30,7 @@ jobs:
           flatpak build-bundle repo lsfg-vk.flatpak org.example.LSFGVK
 
       - name: Upload Flatpak bundle artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lsfg-vk-flatpak
           path: lsfg-vk.flatpak
