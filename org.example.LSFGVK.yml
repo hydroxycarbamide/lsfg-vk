@@ -57,6 +57,27 @@ modules:
       - python3 -m compileall -d /app /app || true
       - python3 -O -m compileall -d /app /app || true
 
+  # SPIRV-Headers (fix missing spirv.hpp)
+  - name: spirv-headers
+    buildsystem: cmake
+    builddir: true
+    build-options:
+      append-path: /usr/lib/sdk/llvm20/bin
+      env:
+        CC: clang
+        CXX: clang++
+    config-opts:
+      - -DCMAKE_INSTALL_PREFIX=/app
+      - -DCMAKE_BUILD_TYPE=Release
+    sources:
+      - type: git
+        url: https://github.com/KhronosGroup/SPIRV-Headers.git
+        tag: sdk-1.4.313.0
+    build-commands:
+      - cmake -B build ${CMAKE_ARGS}
+      - cmake --build build
+      - cmake --install build
+
   # LSFG-VK main project
   - name: lsfg-vk
     buildsystem: cmake
