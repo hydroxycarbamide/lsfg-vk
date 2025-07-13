@@ -1,0 +1,36 @@
+name: Build lsfg-vk Flatpak
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-flatpak:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Flatpak and flatpak-builder
+        run: |
+          sudo apt update
+          sudo apt install -y flatpak flatpak-builder
+
+      - name: Download Flatpak manifest
+        run: |
+          curl -L -o org.example.LSFGVK.yaml https://github.com/Twig6943/lsfg-vk/raw/refs/heads/develop/org.example.LSFGVK
+
+      - name: Build Flatpak bundle
+        run: |
+          flatpak-builder --force-clean build-dir org.example.LSFGVK.yaml --install-deps-from=flathub
+
+      - name: Create export archive
+        run: |
+          flatpak-builder --repo=repo build-dir org.example.LSFGVK.yaml --force-clean
+          flatpak build-bundle repo lsfg-vk.flatpak org.example.LSFGVK
+
+      - name: Upload Flatpak bundle artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: lsfg-vk-flatpak
+          path: lsfg-vk.flatpak
