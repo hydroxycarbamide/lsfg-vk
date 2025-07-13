@@ -22,7 +22,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/PancakeTAS/lsfg-vk.git
-        tag: develop   # or a specific branch or commit hash
+        branch: develop   # or a specific branch or commit hash
 
     build-commands:
       - cmake -B build -G Ninja ${CMAKE_ARGS}
