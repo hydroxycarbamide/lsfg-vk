@@ -13,16 +13,18 @@ finish-args:
   - --socket=x11
 
 modules:
-  # SDL2 from shared-modules
+  # SDL2 built with clang
   - name: SDL2
-    buildsystem: meson
+    buildsystem: cmake
+    builddir: true
+    env:
+      CC: clang
+      CXX: clang++
     config-opts:
-      - -Dalsa=disabled
-      - -Dwayland=enabled
-      - -Dx11=enabled
-      - -Dvideo_opengl=enabled
-      - -Daudio=disabled
-      - -Djoystick=disabled
+      - -DCMAKE_INSTALL_PREFIX=/app
+      - -DSDL_STATIC=OFF
+      - -DSDL_SHARED=ON
+      - -DSDL_TEST=OFF
     sources:
       - type: archive
         url: https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.3.tar.gz
@@ -39,7 +41,7 @@ modules:
         url: https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/vulkan-sdk-1.4.313.0.tar.gz
         sha256: f68be549d74afb61600a1e3a7d1da1e6b7437758c8e77d664909f88f302c5ac1
 
-  # Main project
+  # LSFG-VK main project
   - name: lsfg-vk
     buildsystem: cmake
     env:
@@ -66,7 +68,7 @@ modules:
       - install -Dm644 build/liblsfg-vk.so /app/lib/liblsfg-vk.so
       - install -Dm644 LICENSE.md /app/share/licenses/lsfg-vk/LICENSE
 
-  # Vulkan ICD Loader
+  # Vulkan ICD loader
   - name: vulkan-icd-loader
     buildsystem: meson
     config-opts:
