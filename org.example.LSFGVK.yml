@@ -47,7 +47,7 @@ modules:
         url: https://github.com/KhronosGroup/Vulkan-Headers.git
         tag: vulkan-sdk-1.4.313.0
       - type: patch
-        url: https://gitlab.archlinux.org/archlinux/packaging/packages/vulkan-headers/-/raw/main/0001-Remove-Werror.patch
+        url: https://gitlab.archlinux.org/archlinux/packaging/packages/vulkan-headers/-/raw/main/0001-Remove-Werror.patch?inline=false
         sha256: 0818df922c751156b1db78e06eb29f772d196b45e8b341d8a31daa558c690ce0
     post-install:
       - python3 -m compileall -d /app /app || true
