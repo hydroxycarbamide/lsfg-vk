@@ -1,7 +1,9 @@
 app-id: org.example.LSFGVK
-runtime: org.kde.Platform
-runtime-version: '6.7'
-sdk: org.kde.Sdk
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.llvm20
 command: lsfg-vk-wrapper
 finish-args:
   - --share=network
@@ -16,6 +18,9 @@ modules:
     env:
       CC: clang
       CXX: clang++
+    build-options:
+      append-path: /usr/lib/sdk/llvm20/bin
+      prepend-ld-library-path: /usr/lib/sdk/llvm20/lib
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/app
