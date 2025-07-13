@@ -1,41 +1,46 @@
 app-id: org.example.LSFGVK
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'        # or your preferred stable version
+runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
-command: lsfg-vk-wrapper         # a wrapper script or just run your app
+sdk-extensions:
+  - llvm16
+command: lsfg-vk-wrapper
 finish-args:
   - --share=network
-  - --device=dri                 # Vulkan support
-  - --filesystem=home            # if needed
+  - --device=dri
+  - --filesystem=home
   - --socket=wayland
   - --socket=x11
 
 modules:
   - name: lsfg-vk
     buildsystem: cmake
+    build-options:
+      append-path: /usr/lib/sdk/llvm16/bin
+      build-args:
+        - --share=network
+        - --env=CC=clang
+        - --env=CXX=clang++
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/app
       - -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
-      - -DCMAKE_CXX_CLANG_TIDY=""
       - -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,lazy
     sources:
       - type: git
         url: https://github.com/PancakeTAS/lsfg-vk.git
-        branch: develop   # or a specific branch or commit hash
+        branch: develop
 
     build-commands:
       - cmake -B build -G Ninja ${CMAKE_ARGS}
       - ninja -C build
       - ninja -C build install
 
-    # Manual install steps because upstream doesn't have 'install' target?
     post-install:
       - install -Dm644 VkLayer_LS_frame_generation.json /app/etc/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json
       - install -Dm644 build/liblsfg-vk.so /app/lib/liblsfg-vk.so
       - install -Dm644 LICENSE.md /app/share/licenses/lsfg-vk/LICENSE
 
-  # Optional: include vulkan-icd-loader for runtime
   - name: vulkan-icd-loader
     buildsystem: simple
     sources:
