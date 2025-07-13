@@ -1,0 +1,48 @@
+app-id: org.example.LSFGVK
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'        # or your preferred stable version
+sdk: org.freedesktop.Sdk
+command: lsfg-vk-wrapper         # a wrapper script or just run your app
+finish-args:
+  - --share=network
+  - --device=dri                 # Vulkan support
+  - --filesystem=home            # if needed
+  - --socket=wayland
+  - --socket=x11
+
+modules:
+  - name: lsfg-vk
+    buildsystem: cmake
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_INSTALL_PREFIX=/app
+      - -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+      - -DCMAKE_CXX_CLANG_TIDY=""
+      - -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,lazy
+    sources:
+      - type: git
+        url: https://github.com/PancakeTAS/lsfg-vk.git
+        tag: main   # or a specific branch or commit hash
+
+    build-commands:
+      - cmake -B build -G Ninja ${CMAKE_ARGS}
+      - ninja -C build
+      - ninja -C build install
+
+    # Manual install steps because upstream doesn't have 'install' target?
+    post-install:
+      - install -Dm644 VkLayer_LS_frame_generation.json /app/etc/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json
+      - install -Dm644 build/liblsfg-vk.so /app/lib/liblsfg-vk.so
+      - install -Dm644 LICENSE.md /app/share/licenses/lsfg-vk/LICENSE
+
+  # Optional: include vulkan-icd-loader for runtime
+  - name: vulkan-icd-loader
+    buildsystem: simple
+    sources:
+      - type: archive
+        url: https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v1.3.261.tar.gz
+        sha256: <sha256sum_of_archive>
+    build-commands:
+      - meson setup builddir --prefix=/app
+      - ninja -C builddir
+      - ninja -C builddir install
