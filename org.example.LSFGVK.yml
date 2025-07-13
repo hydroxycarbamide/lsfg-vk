@@ -30,7 +30,6 @@ modules:
         url: https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.3.tar.gz
         sha256: ba67e012a3b0cfba2987f486ebbff13a517905e32bae627f07a327edb10dfd85
 
-  # Vulkan-Headers (replaces spirv-headers)
   - name: vulkan-headers
     buildsystem: cmake
     builddir: true
@@ -38,11 +37,14 @@ modules:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/app
       - -DCMAKE_SKIP_INSTALL_RPATH=ON
+    build-options:
+      env:
+        CC: clang
+        CXX: clang++
     sources:
       - type: git
         url: https://github.com/KhronosGroup/Vulkan-Headers.git
         tag: vulkan-sdk-1.4.313.0
-        commit: 5e1cb2ba4a68fb4224ce5badb9b7d2d5da28ae2f  # optional, improves reproducibility
       - type: patch
         path: 0001-Remove-Werror.patch
     post-install:
