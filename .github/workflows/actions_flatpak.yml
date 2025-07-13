@@ -24,6 +24,7 @@ jobs:
         run: |
           flatpak --user install -y flathub org.freedesktop.Platform//24.08
           flatpak --user install -y flathub org.freedesktop.Sdk//24.08
+          flatpak --user install -y org.freedesktop.Sdk.Extension.llvm20
 
       - name: Download Flatpak manifest
         run: |
