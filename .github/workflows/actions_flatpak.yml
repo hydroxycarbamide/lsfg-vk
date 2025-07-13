@@ -22,14 +22,14 @@ jobs:
 
       - name: Build Flatpak bundle
         run: |
-          flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-          flatpak install flathub org.freedesktop.Platform//24.08 -y
+          flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak --user install flathub org.freedesktop.Platform//24.08 -y
           flatpak-builder --force-clean build-dir org.example.LSFGVK.yaml --install-deps-from=flathub
 
       - name: Create export archive
         run: |
           flatpak-builder --repo=repo build-dir org.example.LSFGVK.yaml --force-clean
-          flatpak build-bundle repo lsfg-vk.flatpak org.example.LSFGVK
+          flatpak --user build-bundle repo lsfg-vk.flatpak org.example.LSFGVK
 
       - name: Upload Flatpak bundle artifact
         uses: actions/upload-artifact@v4
