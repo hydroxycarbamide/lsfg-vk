@@ -13,10 +13,9 @@ finish-args:
 modules:
   - name: lsfg-vk
     buildsystem: cmake
-    build-options:
-      build-args:
-        - --env=CC=clang
-        - --env=CXX=clang++
+    env:
+      CC: clang
+      CXX: clang++
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/app
