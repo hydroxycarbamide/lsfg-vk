@@ -32,17 +32,7 @@ modules:
         url: https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.3.tar.gz
         sha256: ba67e012a3b0cfba2987f486ebbff13a517905e32bae627f07a327edb10dfd85
 
-  # Patch for Vulkan-Headers
-  - name: vulkan-headers-patch
-    buildsystem: simple
-    sources:
-      - type: archive
-        url: https://gitlab.archlinux.org/archlinux/packaging/packages/vulkan-headers/-/raw/main/0001-Remove-Werror.patch?inline=false
-        sha256: 0818df922c751156b1db78e06eb29f772d196b45e8b341d8a31daa558c690ce0
-    build-commands:
-      - patch -p1 -i 0001-Remove-Werror.patch
-
-  # Vulkan-Headers with patch applied
+  # Vulkan-Headers with patch applied directly
   - name: vulkan-headers
     buildsystem: cmake
     builddir: true
@@ -59,8 +49,11 @@ modules:
       - type: git
         url: https://github.com/KhronosGroup/Vulkan-Headers.git
         tag: vulkan-sdk-1.4.313.0
+      - type: file
+        url: https://gitlab.archlinux.org/archlinux/packaging/packages/vulkan-headers/-/raw/main/0001-Remove-Werror.patch?inline=false
+        sha256: 0818df922c751156b1db78e06eb29f772d196b45e8b341d8a31daa558c690ce0
     build-commands:
-      - patch -p1 -i ../vulkan-headers-patch/0001-Remove-Werror.patch || true
+      - patch -p1 -i 0001-Remove-Werror.patch || true
       - cmake -B build ${CMAKE_ARGS}
       - cmake --build build
       - cmake --install build
