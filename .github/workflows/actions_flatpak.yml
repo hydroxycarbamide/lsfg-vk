@@ -20,10 +20,15 @@ jobs:
         run: |
           curl -L -o org.example.LSFGVK.yaml https://github.com/Twig6943/lsfg-vk/raw/refs/heads/develop/org.example.LSFGVK.yml
 
-      - name: Build Flatpak bundle
+      - name: Flatpak dependencies
         run: |
           flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak --system remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
           flatpak --user install flathub org.freedesktop.Platform//24.08 -y
+          flatpak --system install flathub org.freedesktop.Platform//24.08 -y
+
+      - name: Build Flatpak bundle
+        run: |
           flatpak-builder --force-clean build-dir org.example.LSFGVK.yaml --install-deps-from=flathub
 
       - name: Create export archive
