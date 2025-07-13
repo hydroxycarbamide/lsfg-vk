@@ -13,17 +13,33 @@ finish-args:
   - --socket=x11
 
 modules:
-  - name: spirv-headers
+  # SDL2 from shared-modules
+  - name: SDL2
     buildsystem: meson
+    config-opts:
+      - -Dalsa=disabled
+      - -Dwayland=enabled
+      - -Dx11=enabled
+      - -Dvideo_opengl=enabled
+      - -Daudio=disabled
+      - -Djoystick=disabled
+    sources:
+      - type: archive
+        url: https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.3.tar.gz
+        sha256: 0a66bfe7e88f9dcbb38f36c843fd1811c58dc3f667e6c7fbb674e10a0e20852f
+
+  # SPIRV-Headers
+  - name: spirv-headers
+    buildsystem: cmake
+    config-opts:
+      - -DCMAKE_INSTALL_PREFIX=/app
+      - -G Ninja
     sources:
       - type: archive
         url: https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/vulkan-sdk-1.4.313.0.tar.gz
         sha256: f68be549d74afb61600a1e3a7d1da1e6b7437758c8e77d664909f88f302c5ac1
-    build-commands:
-      - meson setup builddir --prefix=/app
-      - ninja -C builddir
-      - ninja -C builddir install
 
+  # Main project
   - name: lsfg-vk
     buildsystem: cmake
     env:
@@ -50,13 +66,12 @@ modules:
       - install -Dm644 build/liblsfg-vk.so /app/lib/liblsfg-vk.so
       - install -Dm644 LICENSE.md /app/share/licenses/lsfg-vk/LICENSE
 
+  # Vulkan ICD Loader
   - name: vulkan-icd-loader
-    buildsystem: simple
+    buildsystem: meson
+    config-opts:
+      - --prefix=/app
     sources:
       - type: archive
         url: https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v1.3.261.tar.gz
         sha256: 85d13004c81b032baf7cc4c2de0b2cb57072a86855d7ca7fc9a813621da275ba
-    build-commands:
-      - meson setup builddir --prefix=/app
-      - ninja -C builddir
-      - ninja -C builddir install
