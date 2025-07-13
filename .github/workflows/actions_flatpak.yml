@@ -18,10 +18,12 @@ jobs:
 
       - name: Download Flatpak manifest
         run: |
-          curl -L -o org.example.LSFGVK.yaml https://github.com/Twig6943/lsfg-vk/raw/refs/heads/develop/org.example.LSFGVK
+          curl -L -o org.example.LSFGVK.yaml https://github.com/Twig6943/lsfg-vk/raw/refs/heads/develop/org.example.LSFGVK.yml
 
       - name: Build Flatpak bundle
         run: |
+          flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak install flathub org.freedesktop.Platform//24.08 -y
           flatpak-builder --force-clean build-dir org.example.LSFGVK.yaml --install-deps-from=flathub
 
       - name: Create export archive
