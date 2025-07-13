@@ -18,6 +18,7 @@ modules:
     buildsystem: cmake
     builddir: true
     build-options:
+      append-path: /usr/lib/sdk/llvm20/bin
       env:
         CC: clang
         CXX: clang++
@@ -46,6 +47,7 @@ modules:
     buildsystem: cmake
     builddir: true
     build-options:
+      append-path: /usr/lib/sdk/llvm20/bin
       env:
         CC: clang
         CXX: clang++
