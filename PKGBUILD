@@ -1,37 +1,46 @@
-# Maintainer: Placeholder <placeholder@mail.com>
+# Maintainer: Konstantin Rannev <konstantin.rannev@gmail.com>
+# Contributor: Ash <xash at riseup d0t net>
 
-pkgname=lsfg-vk
-pkgver=r75.9611a70
+pkgname=lsfg-vk-git
+pkgver=r123.dac149c
 pkgrel=1
-pkgdesc="A modern Vulkan renderer for LSFG"
+pkgdesc="Lossless Scaling Frame Generation on Linux via DXVK/Vulkan"
 arch=('x86_64')
 url="https://github.com/PancakeTAS/lsfg-vk"
 license=('MIT')
-depends=('vulkan-headers' 'spirv-headers' 'openssl' 'clang' 'meson')
-makedepends=('git' 'cmake' 'ninja')
-provides=('lsfg-vk')
-source=("git+$url.git")
-md5sums=('SKIP')
+depends=('vulkan-icd-loader')
+makedepends=('clang' 'llvm' 'vulkan-headers' 'cmake' 'meson' 'ninja' 'git' 'sed' 'sdl2' 'glslang')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=('git+https://github.com/PancakeTAS/lsfg-vk')
+sha256sums=('SKIP')
+install=lsfg-vk.install
 
 pkgver() {
-  cd "$srcdir/$pkgname"
-  printf "r%s.%s" \
-    "$(git rev-list --count HEAD)" \
-    "$(git rev-parse --short HEAD)"
+	cd "$srcdir/${pkgname%-git}"
+
+	# Git, no tags available
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
 
 build() {
-  cd "$srcdir/$pkgname"
-  git submodule update --init --recursive
+	cd "$srcdir/${pkgname%-git}"
 
-  CC=clang CXX=clang++ cmake -B build -G Ninja \
+	cmake -B build -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX="$pkgdir/usr"
-
-  cmake --build build
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON \
+    -DCMAKE_CXX_CLANG_TIDY="" \
+    -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-z,lazy" # fixes makepkg's default "-z,now" flag which strips out the necessary symbols
+    cmake --build build
 }
 
 package() {
-  cd "$srcdir/$pkgname"
-  cmake --install build
+	cd "$srcdir/${pkgname%-git}"
+
+	install -Dm644 VkLayer_LS_frame_generation.json "$pkgdir/etc/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
+	
+	install -Dm644 build/liblsfg-vk.so "$pkgdir/usr/lib/liblsfg-vk.so"
+
+	install -Dm644 LICENSE.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
