@@ -32,10 +32,10 @@ modules:
         url: https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.3.tar.gz
         sha256: ba67e012a3b0cfba2987f486ebbff13a517905e32bae627f07a327edb10dfd85
 
-  # Vulkan-Headers without patch
+  # Vulkan-Headers without patch, in-source build
   - name: vulkan-headers
     buildsystem: cmake
-    builddir: true
+    builddir: false
     build-options:
       append-path: /usr/lib/sdk/llvm20/bin
       env:
@@ -50,9 +50,9 @@ modules:
         url: https://github.com/KhronosGroup/Vulkan-Headers.git
         tag: vulkan-sdk-1.4.313.0
     build-commands:
-      - cmake -B build ${CMAKE_ARGS}
-      - cmake --build build
-      - cmake --install build
+      - cmake ${CMAKE_ARGS}
+      - cmake --build .
+      - cmake --install .
     post-install:
       - python3 -m compileall -d /app /app || true
       - python3 -O -m compileall -d /app /app || true
