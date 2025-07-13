@@ -26,7 +26,7 @@ modules:
     sources:
       - type: archive
         url: https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.3.tar.gz
-        sha256: 0a66bfe7e88f9dcbb38f36c843fd1811c58dc3f667e6c7fbb674e10a0e20852f
+        sha256: ba67e012a3b0cfba2987f486ebbff13a517905e32bae627f07a327edb10dfd85
 
   # SPIRV-Headers
   - name: spirv-headers
