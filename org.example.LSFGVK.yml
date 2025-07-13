@@ -1,6 +1,6 @@
 app-id: org.example.LSFGVK
 runtime: org.freedesktop.Platform
-runtime-version: '23.08'        # or your preferred stable version
+runtime-version: '24.08'        # or your preferred stable version
 sdk: org.freedesktop.Sdk
 command: lsfg-vk-wrapper         # a wrapper script or just run your app
 finish-args:
