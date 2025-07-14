@@ -78,8 +78,8 @@ modules:
       - cmake ${CMAKE_ARGS}
       - cmake --build .
       - cmake --install .
-    post-install:
-      - install -Dm644 LICENSE /app/usr/share/licenses/spirv-headers/LICENSE
+    #post-install:
+      #- install -Dm644 LICENSE /app/usr/share/licenses/spirv-headers/LICENSE
       
     #Vulkan-loader
   - name: vulkan-loader
