@@ -13,7 +13,7 @@ finish-args:
   - --socket=x11
 
 modules:
-  # SDL2 with Clang
+  # sdl with clang
   - name: SDL2
     buildsystem: cmake
     builddir: true
@@ -32,7 +32,7 @@ modules:
         url: https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.3.tar.gz
         sha256: ba67e012a3b0cfba2987f486ebbff13a517905e32bae627f07a327edb10dfd85
 
-  # Vulkan-Headers without patch, in-source build
+  # vulkan-headers without patch, in-source build
   - name: vulkan-headers
     buildsystem: cmake
     builddir: false
@@ -57,7 +57,7 @@ modules:
       - python3 -m compileall -d /app /app || true
       - python3 -O -m compileall -d /app /app || true
 
-    #Spirv-Headers
+    #spirv-Headers
   - name: spirv-headers
     buildsystem: cmake
     builddir: false
@@ -81,7 +81,7 @@ modules:
     #post-install:
       #- install -Dm644 LICENSE /app/usr/share/licenses/spirv-headers/LICENSE
       
-    #Vulkan-loader
+    #vulkan-loader
   - name: vulkan-loader
     buildsystem: cmake
     builddir: false
@@ -105,7 +105,7 @@ modules:
     post-install:
       - install -Dm644 LICENSE.txt /app/usr/share/licenses/vulkan-loader/LICENSE.txt
       
-  # LSFG-VK main project
+  # lsfg-vk
   - name: lsfg-vk
     buildsystem: cmake
     build-options:
