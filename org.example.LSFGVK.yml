@@ -81,6 +81,30 @@ modules:
     post-install:
       - install -Dm644 LICENSE /app/usr/share/licenses/spirv-headers/LICENSE
       
+    #Vulkan-loader
+  - name: vulkan-loader
+    buildsystem: cmake
+    builddir: false
+    build-options:
+      append-path: /usr/lib/sdk/llvm20/bin
+      env:
+        CC: clang
+        CXX: clang++
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_INSTALL_PREFIX=/app
+      - -DCMAKE_SKIP_INSTALL_RPATH=ON
+    sources:
+      - type: git
+        url: https://github.com/KhronosGroup/Vulkan-Loader.git
+        tag: vulkan-sdk-1.4.313.0
+    build-commands:
+      - cmake ${CMAKE_ARGS}
+      - cmake --build .
+      - cmake --install .
+    post-install:
+      - install -Dm644 LICENSE /app/usr/share/licenses/vulkan-loader/LICENSE
+      
   # Vulkan ICD loader
   - name: vulkan-icd-loader
     buildsystem: meson
