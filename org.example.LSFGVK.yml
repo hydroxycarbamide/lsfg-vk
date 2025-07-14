@@ -103,7 +103,7 @@ modules:
       - cmake --build .
       - cmake --install .
     post-install:
-      - install -Dm644 LICENSE /app/usr/share/licenses/vulkan-loader/LICENSE
+      - install -Dm644 LICENSE.txt /app/usr/share/licenses/vulkan-loader/LICENSE.txt
       
   # LSFG-VK main project
   - name: lsfg-vk
