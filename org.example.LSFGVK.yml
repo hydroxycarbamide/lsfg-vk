@@ -57,27 +57,26 @@ modules:
       - python3 -m compileall -d /app /app || true
       - python3 -O -m compileall -d /app /app || true
 
-  # SPIRV-Headers
-  - name: spirv-headers
+- name: vulkan-headers
     buildsystem: cmake
-    builddir: true
+    builddir: false
     build-options:
       append-path: /usr/lib/sdk/llvm20/bin
       env:
         CC: clang
         CXX: clang++
     config-opts:
-      - -DCMAKE_INSTALL_PREFIX=/app
       - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_INSTALL_PREFIX=/app
       - -DCMAKE_SKIP_INSTALL_RPATH=ON
     sources:
       - type: git
-        url: https://github.com/KhronosGroup/SPIRV-Headers.git
+        url: https://github.com/KhronosGroup/Spirv-Headers.git
         tag: vulkan-sdk-1.4.313.0
     build-commands:
-      - cmake -S . -B build
-      - cmake --build build
-      - cmake --install build
+      - cmake ${CMAKE_ARGS}
+      - cmake --build .
+      - cmake --install .
     post-install:
       - install -Dm644 LICENSE /app/usr/share/licenses/spirv-headers/LICENSE
 
