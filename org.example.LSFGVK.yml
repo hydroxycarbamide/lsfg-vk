@@ -105,12 +105,6 @@ modules:
     post-install:
       - install -Dm644 LICENSE /app/usr/share/licenses/vulkan-loader/LICENSE
       
-  # Vulkan ICD loader
-  - name: vulkan-icd-loader
-    buildsystem: meson
-    config-opts:
-      - --prefix=/app
-      
   # LSFG-VK main project
   - name: lsfg-vk
     buildsystem: cmake
