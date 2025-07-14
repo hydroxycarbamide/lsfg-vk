@@ -80,7 +80,13 @@ modules:
       - cmake --install .
     post-install:
       - install -Dm644 LICENSE /app/usr/share/licenses/spirv-headers/LICENSE
-
+      
+  # Vulkan ICD loader
+  - name: vulkan-icd-loader
+    buildsystem: meson
+    config-opts:
+      - --prefix=/app
+      
   # LSFG-VK main project
   - name: lsfg-vk
     buildsystem: cmake
@@ -108,9 +114,5 @@ modules:
       - install -Dm644 build/liblsfg-vk.so /app/lib/liblsfg-vk.so
       - install -Dm644 LICENSE.md /app/share/licenses/lsfg-vk/LICENSE
 
-  # Vulkan ICD loader
-  - name: vulkan-icd-loader
-    buildsystem: meson
-    config-opts:
-      - --prefix=/app
+
    
