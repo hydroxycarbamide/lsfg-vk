@@ -106,7 +106,7 @@ modules:
         url: https://github.com/PancakeTAS/lsfg-vk.git
         branch: develop
     build-commands:
-      - cmake -B build -G Ninja ${CMAKE_ARGS}
+      - cmake -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/app -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,lazy
       - ninja -C build
       - ninja -C build install
     post-install:
