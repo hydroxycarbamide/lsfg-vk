@@ -1,7 +1,5 @@
-name: Build lsfg-vk Flatpak
-
-on:
-  workflow_dispatch:
+name: Build lsfg-vk on Flatpak
+on: [push]
 
 jobs:
   flatpak:
