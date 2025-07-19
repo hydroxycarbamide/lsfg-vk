@@ -50,26 +50,10 @@ modules:
       - ninja -C build install
 
     modules:
-      - name: vulkan-headers
-        buildsystem: cmake-ninja
-        builddir: true
-        sources:
-          - type: git
-            url: https://github.com/KhronosGroup/Vulkan-Headers.git
-            tag: vulkan-sdk-1.4.313
-    
       - name: spirv-headers
         buildsystem: cmake-ninja
         builddir: true
         sources:
           - type: git
             url: https://github.com/KhronosGroup/Spirv-Headers.git
-            tag: vulkan-sdk-1.4.313
-    
-      - name: vulkan-loader
-        buildsystem: cmake-ninja
-        builddir: true
-        sources:
-          - type: git
-            url: https://github.com/KhronosGroup/Vulkan-Loader.git
             tag: vulkan-sdk-1.4.313
