@@ -10,50 +10,59 @@ sdk-extensions:
 
 build-options:
   prefix: /usr/lib/extensions/vulkan/lsfgvk
-  prepend-path: /usr/lib/extensions/vulkan/lsfgvk/bin
+  prepend-ld-library-path: /usr/lib/sdk/llvm20/lib
+  prepend-path: /usr/lib/sdk/llvm20/bin
   prepend-pkg-config-path: /usr/lib/extensions/vulkan/lsfgvk/share/pkgconfig
   env:
-    C_INCLUDE_PATH: /usr/lib/extensions/vulkan/lsfgvk/include
+    CC: clang
+    CXX: clang++
     CPLUS_INCLUDE_PATH: /usr/lib/extensions/vulkan/lsfgvk/include
+    C_INCLUDE_PATH: /usr/lib/extensions/vulkan/lsfgvk/include
 
 cleanup:
-  - /bin
   - /include
-  - /lib/*.a
-  - /lib/*.la
-  - /lib/libSDL*
-  - /lib/libvulkan*
   - /lib/cmake
   - /lib/pkgconfig
-  - /share/aclocal
   - /share/cmake
-  - /share/doc
-  - /share/licenses
-  - /share/man
   - /share/pkgconfig
   - /share/vulkan/registry
 
 modules:
   - name: lsfg-vk
     buildsystem: simple
-    build-options:
-      append-path: /usr/lib/sdk/llvm20/bin
-      prepend-ld-library-path: /usr/lib/sdk/llvm20/lib
     sources:
       - type: git
         url: https://github.com/PancakeTAS/lsfg-vk.git
         branch: develop
     build-commands:
-      - 'sed -i ''s|"library_path": "../../../lib/liblsfg-vk.so"|"library_path": "/usr/lib/extensions/vulkan/lsfgvk/lib/liblsfg-vk.so"|g'' VkLayer_LS_frame_generation.json'
+      - |
+        set -e
+        sed -i 's|"library_path": "../../../lib/liblsfg-vk.so"|"library_path": "/usr/lib/extensions/vulkan/lsfgvk/lib/liblsfg-vk.so"|' VkLayer_LS_frame_generation.json
       - cmake -B build -G Ninja -DCMAKE_INSTALL_PREFIX=${FLATPAK_DEST} -DCMAKE_BUILD_TYPE=Release -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,lazy
       - ninja -C build
       - ninja -C build install
 
     modules:
+      - name: vulkan-headers
+        buildsystem: cmake-ninja
+        builddir: true
+        sources:
+          - type: git
+            url: https://github.com/KhronosGroup/Vulkan-Headers.git
+            tag: &vulkan-sdk vulkan-sdk-1.4.313
+
       - name: spirv-headers
         buildsystem: cmake-ninja
         builddir: true
         sources:
           - type: git
             url: https://github.com/KhronosGroup/Spirv-Headers.git
-            tag: vulkan-sdk-1.4.313
+            tag: *vulkan-sdk
+
+      - name: vulkan-loader
+        buildsystem: cmake-ninja
+        builddir: true
+        sources:
+          - type: git
+            url: https://github.com/KhronosGroup/Vulkan-Loader.git
+            tag: *vulkan-sdk
