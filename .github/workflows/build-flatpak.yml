@@ -16,4 +16,3 @@ jobs:
       with:
         bundle: org.freedesktop.Platform.VulkanLayer.lsfgvk.flatpak
         manifest-path: org.freedesktop.Platform.VulkanLayer.lsfgvk.yml
-        cache-key: flatpak-builder-${{ github.sha }}
