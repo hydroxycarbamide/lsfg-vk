@@ -8,12 +8,10 @@ jobs:
       image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
       options: --privileged
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Install flatpak deps
-      run: |
-        flatpak install -y org.freedesktop.Sdk.Extension.llvm20
-
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: true
     - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
       with:
         bundle: org.freedesktop.Platform.VulkanLayer.lsfgvk.flatpak
