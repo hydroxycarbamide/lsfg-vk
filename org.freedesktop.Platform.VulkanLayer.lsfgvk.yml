@@ -44,6 +44,7 @@ modules:
         url: https://github.com/PancakeTAS/lsfg-vk.git
         branch: develop
     build-commands:
+      - 'sed -i ''s|"library_path": "../../../lib/liblsfg-vk.so"|"library_path": "/usr/lib/extensions/vulkan/lsfgvk/lib/liblsfg-vk.so"|g'' VkLayer_LS_frame_generation.json'
       - cmake -B build -G Ninja -DCMAKE_INSTALL_PREFIX=${FLATPAK_DEST} -DCMAKE_BUILD_TYPE=Release -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,lazy
       - ninja -C build
       - ninja -C build install

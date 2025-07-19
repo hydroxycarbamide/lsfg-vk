@@ -12,9 +12,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: true
-    - name: Apply library path fix
-      run: |
-        sed -i 's|"library_path": "../../../lib/liblsfg-vk.so"|"library_path": "/usr/lib/extensions/vulkan/lsfgvk/lib/liblsfg-vk.so"|g' VkLayer_LS_frame_generation.json
     - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
       with:
         bundle: org.freedesktop.Platform.VulkanLayer.lsfgvk.flatpak
